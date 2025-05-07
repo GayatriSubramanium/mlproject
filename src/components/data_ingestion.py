@@ -4,10 +4,10 @@ import pandas as pd
 import logging
 from dataclasses import dataclass
 from sklearn.model_selection import train_test_split
-from src.exception import CustomException  
 
-from src.components.data_transformation import DataTransformation  # Updated class name
-from src.components.data_transformation import DataTransformationConfig
+from src.exception import CustomException  
+from src.components.data_transformation import DataTransformation, DataTransformationConfig
+from src.components.model_trainer import ModelTrainerConfig, ModelTrainer
 
 # Configure logging
 logging.basicConfig(
@@ -28,7 +28,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the data ingestion method/component")
         try:
-            data_path = os.path.join('notebook', 'stud.csv')  # more robust path
+            data_path = os.path.join('notebook', 'stud.csv')  # Ensure this file exists
             df = pd.read_csv(data_path)
             logging.info("Read the dataset as DataFrame")
 
@@ -52,8 +52,17 @@ class DataIngestion:
             raise CustomException(e, sys)
 
 if __name__ == "__main__":
+    # Step 1: Ingest Data
     obj = DataIngestion()
     train_data, test_data = obj.initiate_data_ingestion()
 
+    # Step 2: Transform Data
     data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_data, test_data)
+    train_arr, test_arr, preprocessor_path = data_transformation.initiate_data_transformation(train_data, test_data)
+
+    # Step 3: Train Model
+    model_trainer = ModelTrainer()
+    r2_score = model_trainer.initiate_model_trainer(train_arr, test_arr)
+
+    print("Model R2 Score:", r2_score)
+

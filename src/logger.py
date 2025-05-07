@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import sys
 
+
 # Custom Exception Definition
 class CustomException(Exception):
     def __init__(self, error_message, error_detail: sys):

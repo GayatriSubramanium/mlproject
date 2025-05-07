@@ -1,11 +1,19 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 import pandas as pd
 import logging
 from dataclasses import dataclass
 from sklearn.model_selection import train_test_split
 from src.exception import CustomException  
+
+from src.components.data_transformation import DataTransformation  # Updated class name
+from src.components.data_transformation import DataTransformationConfig
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 @dataclass
 class DataIngestionConfig:
@@ -20,7 +28,8 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the data ingestion method/component")
         try:
-            df = pd.read_csv('notebook/stud.csv')  # Or use r'notebook\stud.csv'
+            data_path = os.path.join('notebook', 'stud.csv')  # more robust path
+            df = pd.read_csv(data_path)
             logging.info("Read the dataset as DataFrame")
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)
@@ -41,12 +50,10 @@ class DataIngestion:
 
         except Exception as e:
             raise CustomException(e, sys)
-        
-if __name__=="__main__":
+
+if __name__ == "__main__":
     obj = DataIngestion()
-    obj.initiate_data_ingestion()
+    train_data, test_data = obj.initiate_data_ingestion()
 
-
-
-
-        
+    data_transformation = DataTransformation()
+    data_transformation.initiate_data_transformation(train_data, test_data)
